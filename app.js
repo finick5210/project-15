@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const path = require('path');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -32,8 +31,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(requestLogger);
 
 app.get('/crash-test', () => {
@@ -60,7 +57,7 @@ app.post('/signup', celebrate({
       throw new ValidationError(`${value} is not a valid url!`);
     }),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(4),
   }),
 }), createUser);
 

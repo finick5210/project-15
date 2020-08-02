@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Нет карточки с таким id');
       } if (card.owner.toString() !== req.user._id) {
-        throw new AuthorizationError('Недостаточно прав для удаления карточки');
+        throw new AuthorizationError('Недостаточно прав для удаления карточки', 403);
       }
 
       Card.deleteOne({ _id: card._id })

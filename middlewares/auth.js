@@ -13,8 +13,8 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    const { JWT_SECRET } = process.env;
-    payload = jwt.verify(token, JWT_SECRET || 'dev_secret');
+    const { NODE_ENV, JWT_SECRET } = process.env;
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
     return next(new AuthorizationError(message));
   }

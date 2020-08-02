@@ -1,5 +1,5 @@
 {
-  "name": "project-12",
+  "name": "project-15",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/finick5210/project-12.git"
+    "url": "git+https://github.com/finick5210/project-15.git"
   },
   "keywords": [],
   "author": "$finick5210 (https://github.com/finick5210)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/finick5210/project-12/issues"
+    "url": "https://github.com/finick5210/project-15/issues"
   },
-  "homepage": "https://github.com/finick5210/project-12#readme",
+  "homepage": "https://github.com/finick5210/project-15#readme",
   "devDependencies": {
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",

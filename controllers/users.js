@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const {
-  NotFoundError, ValidationError, ServerError, AuthorizationError,
+  NotFoundError, ValidationError, ServerError, AuthorizationError, ConflictError,
 } = require('../errors');
 
 module.exports.getUsers = (req, res, next) => {
@@ -16,14 +16,6 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  if (!password || password.trim().length === 0) {
-    next(new ValidationError('Password should not be empty'));
-  }
-
-  if (password.length < 4 || password.length > 30) {
-    next(new ValidationError('Password must be longer than 4 characters and less then 30'));
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -40,7 +32,13 @@ module.exports.createUser = (req, res, next) => {
       email,
     }))
     .catch((err) => {
-      next(err.name === 'ValidationError' ? new ValidationError(err.message) : new ServerError(err.message));
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError(err.message));
+      }
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return next(new ConflictError(err.message));
+      }
+      return next(new ServerError(err.message));
     });
 };
 
