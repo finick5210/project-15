@@ -35,9 +35,11 @@ app.use(auth);
 
 app.use('/users', users);
 app.use('/cards', cards);
-app.use((req, res) => {
-  res.status('404');
-  res.send({ message: 'Запрашиваемый ресурс не найден' });
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Unexpected server error' : message });
+  next();
 });
 
 app.listen(PORT, () => {

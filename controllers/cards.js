@@ -1,44 +1,36 @@
 const Card = require('../models/card');
+const { NotFoundError, AuthorizationError, ServerError, ValidationError } = require('../errors');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => next(new ServerError(err.message)));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const { _id } = req.user;
 
   Card.create({ name, link, owner: _id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
-        return;
-      }
-      res.status(500).send({ message: err.message });
+      next(err.name === 'ValidationError' ? new ValidationError(err.message) : new ServerError(err.message));
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        res.status('404');
-        res.send({ message: 'Нет карточки с таким id' });
-        return;
-        // eslint-disable-next-line no-underscore-dangle
+        throw new NotFoundError('Нет карточки с таким id');
       } if (card.owner.toString() !== req.user._id) {
-        res.status('401');
-        res.send({ message: 'Недостаточно прав для удаления карточки' });
-        return;
+        throw new AuthorizationError('Недостаточно прав для удаления карточки');
       }
-      // eslint-disable-next-line no-underscore-dangle
+
       Card.deleteOne({ _id: card._id })
         .then(() => {
           res.send({ data: card });
         });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((error) => next(error.message));
 };
