@@ -1,5 +1,7 @@
 const Card = require('../models/card');
-const { NotFoundError, AuthorizationError, ServerError, ValidationError } = require('../errors');
+const {
+  NotFoundError, AuthorizationError, ServerError, ValidationError,
+} = require('../errors');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})

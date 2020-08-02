@@ -4,5 +4,5 @@ const ValidationError = require('./validation-error');
 const ServerError = require('./server-error');
 
 module.exports = {
-  AuthorizationError, NotFoundError, ValidationError, ServerError
+  AuthorizationError, NotFoundError, ValidationError, ServerError,
 };
