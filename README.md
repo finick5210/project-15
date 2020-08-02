@@ -20,6 +20,7 @@ Project from the [Yandex.practikum](https://praktikum.yandex.ru/) web developer 
 8. POST '/signin' - login
 
 ## Availability
-1. http://130.193.36.168:3000
-2. http://mesto.ga
-3. https://mesto.ga
+1. http://84.201.158.35
+2. http://84.201.158.35
+3. http://mesto-yandex.tk
+4. https://mesto-yandex.tk
