@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   const message = 'Authorization is required';
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new AuthorizationError(message));
+    return next(new AuthorizationError(message));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     const { JWT_SECRET } = process.env;
     payload = jwt.verify(token, JWT_SECRET || 'dev_secret');
   } catch (err) {
-    next(new AuthorizationError(message));
+    return next(new AuthorizationError(message));
   }
 
   req.user = payload;
