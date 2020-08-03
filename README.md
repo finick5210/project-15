@@ -6,8 +6,8 @@ Project from the [Yandex.practikum](https://praktikum.yandex.ru/) web developer 
 ## Current version
 0.0.1
 
-## How to start project
-1. To start project just perform command "npm run start" from project root
+## How to start project in dev mode
+1. To start project just perform command "npm run dev" from project root
 2. Project will be available by link [Project 15](http://localhost:3000)
 
 ## API
@@ -19,3 +19,8 @@ Project from the [Yandex.practikum](https://praktikum.yandex.ru/) web developer 
 7. POST '/signup' - register new user
 8. POST '/signin' - login
 
+## Availability
+1. http://84.201.158.35
+2. https://84.201.158.35
+3. http://mesto-yandex.tk
+4. https://mesto-yandex.tk

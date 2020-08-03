@@ -2,26 +2,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+const {
+  NotFoundError, ValidationError, ServerError, AuthorizationError, ConflictError,
+} = require('../errors');
+
+module.exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => next(new ServerError(err.message)));
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-
-  if (!password || password.trim().length === 0) {
-    res.status(400).send({ message: 'Password should not be empty' });
-    return;
-  }
-
-  if (password.length < 4 || password.length > 30) {
-    res.status(400).send({ message: 'Password must be longer than 4 characters and less then 30' });
-    return;
-  }
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -39,38 +33,37 @@ module.exports.createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
-        return;
+        return next(new ValidationError(err.message));
       }
-      res.status(500).send({ message: err.message });
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return next(new ConflictError(err.message));
+      }
+      return next(new ServerError(err.message));
     });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
     .then((user) => {
       if (!user) {
-        res.status('404');
-        res.send({ message: 'Нет пользователя с таким id' });
-        return;
+        throw new NotFoundError('Нет пользователя с таким id');
       }
       res.send({ data: user });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const { JWT_SECRET } = process.env;
+      const { NODE_ENV, JWT_SECRET } = process.env;
 
       const token = jwt.sign(
-        // eslint-disable-next-line no-underscore-dangle
         { _id: user._id },
-        JWT_SECRET || 'dev_secret',
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
 
@@ -82,9 +75,5 @@ module.exports.login = (req, res) => {
 
       return res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch((err) => next(new AuthorizationError(err.message)));
 };
