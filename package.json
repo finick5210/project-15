@@ -37,7 +37,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.26",
     "path": "^0.12.7",
-    "validator": "^13.1.1",
+    "validator": "^13.7.0",
     "winston": "^3.3.3"
   }
 }
